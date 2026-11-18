@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Trainer Dashboard - FitAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4" style="max-width: 1200px;">
+    <!-- Trainer Dashboard Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge badge-green">Trainer Workspace</span>
+                <h1 class="fs-4 fw-bold mb-0">Coach {{ trainer_name }}</h1>
+            </div>
+            <p class="text-muted small mb-0">Manage athlete clients, oversee supervised workouts, and inspect nutritional adherence.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('trainer.add_client') }}" class="btn btn-primary-custom btn-trainer btn-sm">
+                <i class="bi bi-person-plus"></i> Add New Client
+            </a>
+            <a href="{{ url_for('trainer.manage_clients') }}" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-people"></i> View Clients ({{ total_clients }})
+            </a>
+            <a href="{{ url_for('prediction.predict_calories') }}" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-fire"></i> Log Workout
+            </a>
+        </div>
+    </div>
+
+    <!-- 4 Overview Metric Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Card 1: Total Clients -->
+        <div class="col-xl-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Active Clients</div>
+                    <div class="stat-value">{{ total_clients }}</div>
+                    <div class="stat-subtext">Registered athletes</div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-green"><i class="bi bi-people"></i></div>
+            </div>
+        </div>
+
+        <!-- Card 2: Total Workouts -->
+        <div class="col-xl-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Total Workouts</div>
+                    <div class="stat-value">{{ stats.total_workouts }}</div>
+                    <div class="stat-subtext">{{ "{:,.0f}".format(stats.total_duration) }} client training mins</div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-blue"><i class="bi bi-activity"></i></div>
+            </div>
+        </div>
+
+        <!-- Card 3: Total Calories Burned -->
+        <div class="col-xl-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Client Calories Burned</div>
+                    <div class="stat-value">{{ "{:,.0f}".format(stats.total_calories_burned) }} <span class="fs-6 fw-normal text-muted">kcal</span></div>
+                    <div class="stat-subtext">Combined expenditure</div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-rose"><i class="bi bi-fire"></i></div>
+            </div>
+        </div>
+
+        <!-- Card 4: Average Client Performance -->
+        <div class="col-xl-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Avg Calories / Workout</div>
+                    <div class="stat-value">{{ "{:,.1f}".format(stats.avg_calories_burned) }} <span class="fs-6 fw-normal text-muted">kcal</span></div>
+                    <div class="stat-subtext">Per training session</div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-amber"><i class="bi bi-speedometer2"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content: Clients Roster & Recent Activity -->
+    <div class="row g-4 mb-4">
+        <!-- Client Roster Cards -->
+        <div class="col-lg-7">
+            <div class="card-custom h-100">
+                <div class="card-header-clean">
+                    <h6 class="fw-bold mb-0">Assigned Clients</h6>
+                    <a href="{{ url_for('trainer.manage_clients') }}" class="text-primary small fw-medium">View All &rarr;</a>
+                </div>
+                <div class="p-3">
+                    {% if clients %}
+                    <div class="row g-3">
+                        {% for c in clients[:4] %}
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 bg-white h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h2 class="fs-6 fw-semibold text-dark mb-0">{{ c.client_name }}</h2>
+                                        <span class="badge badge-neutral">{{ c.gender|capitalize }}</span>
+                                    </div>
+                                    <div class="small text-muted mb-2">
+                                        {{ c.email }}
+                                    </div>
+                                    <div class="d-flex gap-2 small text-muted mb-3">
+                                        <span>{{ c.age }} yrs</span> &bull;
+                                        <span>{{ c.height|int }} cm</span> &bull;
+                                        <span>{{ c.weight|int }} kg</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center border-top pt-2">
+                                    <span class="small text-muted">{{ c.workout_count }} workouts</span>
+                                    <a href="{{ url_for('trainer.client_details', client_id=c.client_id) }}" class="btn btn-outline-custom btn-sm py-1 px-2">
+                                        Details &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state py-4">
+                        <i class="bi bi-person-plus empty-state-icon"></i>
+                        <h2 class="fs-6 fw-bold mb-1">No clients registered yet</h2>
+                        <p class="small text-muted mb-2">Add your first gym client to start tracking their progress.</p>
+                        <a href="{{ url_for('trainer.add_client') }}" class="btn btn-outline-custom btn-sm">Add Client</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Client Activity -->
+        <div class="col-lg-5">
+            <div class="card-custom h-100">
+                <div class="card-header-clean">
+                    <h6 class="fw-bold mb-0">Recent Supervised Workouts</h6>
+                </div>
+                <div class="p-0">
+                    {% if recent_workouts %}
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Exercise</th>
+                                    <th>Burned</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rw in recent_workouts %}
+                                <tr>
+                                    <td class="fw-semibold">
+                                        <a href="{{ url_for('trainer.client_details', client_id=rw.client_id) }}" class="text-dark">
+                                            {{ rw.client_name }}
+                                        </a>
+                                    </td>
+                                    <td><span class="badge badge-neutral">{{ rw.exercise_type }}</span></td>
+                                    <td class="fw-semibold text-primary">{{ "{:,.0f}".format(rw.calories_burned) }} kcal</td>
+                                    <td class="text-muted small">{{ rw.workout_date.strftime('%b %d') if rw.workout_date else '' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state py-4">
+                        <i class="bi bi-activity empty-state-icon"></i>
+                        <p class="text-muted small mb-0">No client workouts recorded yet</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

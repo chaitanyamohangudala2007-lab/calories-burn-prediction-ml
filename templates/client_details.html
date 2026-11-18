@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}{{ client.client_name }} - Client Details - FitAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4" style="max-width: 1200px;">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <a href="{{ url_for('trainer.manage_clients') }}" class="btn btn-outline-custom btn-sm py-1 px-2">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h1 class="fs-4 fw-bold mb-0">{{ client.client_name }}</h1>
+                <span class="badge badge-neutral">{{ client.gender|capitalize }}</span>
+            </div>
+            <p class="text-muted small mb-0">{{ client.email }} &bull; Client since {{ client.created_at.strftime('%b %d, %Y') if client.created_at else '' }}</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('prediction.predict_calories') }}" class="btn btn-primary-custom btn-sm">
+                <i class="bi bi-fire"></i> Log Workout
+            </a>
+            <a href="{{ url_for('food.food_analyzer') }}" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-camera"></i> Scan Meal
+            </a>
+        </div>
+    </div>
+
+    <!-- 1. Client Biometrics Profile Strip -->
+    <div class="card-custom p-3 mb-4 bg-white">
+        <div class="row g-2 text-center">
+            <div class="col-md-2 col-4">
+                <div class="p-2 border rounded bg-light">
+                    <span class="text-muted small d-block">Age</span>
+                    <span class="fw-semibold fs-6 text-dark">{{ client.age }} yrs</span>
+                </div>
+            </div>
+            <div class="col-md-2 col-4">
+                <div class="p-2 border rounded bg-light">
+                    <span class="text-muted small d-block">Height</span>
+                    <span class="fw-semibold fs-6 text-dark">{{ client.height|int }} cm</span>
+                </div>
+            </div>
+            <div class="col-md-2 col-4">
+                <div class="p-2 border rounded bg-light">
+                    <span class="text-muted small d-block">Weight</span>
+                    <span class="fw-semibold fs-6 text-dark">{{ client.weight|int }} kg</span>
+                </div>
+            </div>
+            <div class="col-md-2 col-4">
+                <div class="p-2 border rounded bg-light">
+                    <span class="text-muted small d-block">BMI</span>
+                    <span class="fw-semibold fs-6 text-primary">{{ client.bmi }}</span>
+                </div>
+            </div>
+            <div class="col-md-2 col-4">
+                <div class="p-2 border rounded bg-light">
+                    <span class="text-muted small d-block">Workouts</span>
+                    <span class="fw-semibold fs-6 text-dark">{{ stats.total_workouts }}</span>
+                </div>
+            </div>
+            <div class="col-md-2 col-4">
+                <div class="p-2 border rounded bg-light">
+                    <span class="text-muted small d-block">Meals Logged</span>
+                    <span class="fw-semibold fs-6 text-success">{{ food_stats.total_meals }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Cards: Daily, Weekly, Monthly -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Daily Progress (Today)</div>
+                    <div class="stat-value">{{ "{:,.0f}".format(daily_burned) }} <span class="fs-6 fw-normal text-muted">kcal</span></div>
+                    <div class="stat-subtext">Burned today</div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-blue"><i class="bi bi-calendar-check"></i></div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Weekly Progress (7d)</div>
+                    <div class="stat-value">{{ "{:,.0f}".format(weekly_burned) }} <span class="fs-6 fw-normal text-muted">kcal</span></div>
+                    <div class="stat-subtext">Burned this week</div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-green"><i class="bi bi-calendar-range"></i></div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Monthly Progress (30d)</div>
+                    <div class="stat-value">{{ "{:,.0f}".format(monthly_burned) }} <span class="fs-6 fw-normal text-muted">kcal</span></div>
+                    <div class="stat-subtext">Burned this month</div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-amber"><i class="bi bi-calendar-month"></i></div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Total Calories Burned</div>
+                    <div class="stat-value">{{ "{:,.0f}".format(stats.total_burned) }} <span class="fs-6 fw-normal text-muted">kcal</span></div>
+                    <div class="stat-subtext">All-time expenditure</div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-rose"><i class="bi bi-fire"></i></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Performance Graphs -->
+    <div class="row g-4 mb-4">
+        <!-- Daily Calories Burned vs Food Consumed -->
+        <div class="col-lg-8">
+            <div class="card-custom h-100">
+                <div class="card-header-clean">
+                    <div>
+                        <h6 class="fw-bold mb-0">Daily Calories Burned vs Food Consumed (Last 7 Days)</h6>
+                        <span class="text-muted small">Tracks energy surplus or deficit</span>
+                    </div>
+                    <span class="badge badge-neutral">Last 7 Days</span>
+                </div>
+                <div class="p-3">
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="clientDailyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Duration Comparison -->
+        <div class="col-lg-4">
+            <div class="card-custom h-100">
+                <div class="card-header-clean">
+                    <h6 class="fw-bold mb-0">Workout Duration (Minutes)</h6>
+                    <span class="text-muted small">Active training time</span>
+                </div>
+                <div class="p-3">
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="clientDurationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Row: Workout History & Food Nutrition History -->
+    <div class="row g-4 mb-4">
+        <!-- Recent Workouts -->
+        <div class="col-lg-6">
+            <div class="card-custom h-100">
+                <div class="card-header-clean">
+                    <h6 class="fw-bold mb-0">Recent Supervised Workouts</h6>
+                    <a href="{{ url_for('trainer.client_workout_history', client_id=client.client_id) }}" class="text-primary small fw-medium">View All &rarr;</a>
+                </div>
+                <div class="p-0">
+                    {% if workouts %}
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Exercise</th>
+                                    <th>Duration</th>
+                                    <th>Heart Rate</th>
+                                    <th>Calories</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for w in workouts %}
+                                <tr>
+                                    <td class="fw-semibold text-dark">{{ w.exercise_type }}</td>
+                                    <td>{{ w.duration|int }} min</td>
+                                    <td>{{ w.heart_rate|int }} bpm</td>
+                                    <td class="fw-semibold text-primary">{{ "{:,.0f}".format(w.calories_burned) }} kcal</td>
+                                    <td class="text-muted small">{{ w.workout_date.strftime('%b %d') if w.workout_date else '' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state py-4">
+                        <p class="text-muted small mb-0">No workouts logged for this client yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Food Nutrition History -->
+        <div class="col-lg-6">
+            <div class="card-custom h-100">
+                <div class="card-header-clean">
+                    <h6 class="fw-bold mb-0">Food Nutrition Logs</h6>
+                    <a href="{{ url_for('trainer.client_nutrition_history', client_id=client.client_id) }}" class="text-primary small fw-medium">View All &rarr;</a>
+                </div>
+                <div class="p-0">
+                    {% if foods %}
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Food</th>
+                                    <th>Portion</th>
+                                    <th>Calories</th>
+                                    <th>Macros</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for f in foods %}
+                                <tr>
+                                    <td class="fw-semibold text-dark">{{ f.food_name }}</td>
+                                    <td class="text-muted small">{{ f.quantity }}</td>
+                                    <td class="fw-semibold text-success">{{ "{:,.0f}".format(f.estimated_calories) }} kcal</td>
+                                    <td class="text-muted small">{{ f.protein|int }}P / {{ f.carbohydrates|int }}C / {{ f.fat|int }}F</td>
+                                    <td class="text-muted small">{{ f.analysis_date.strftime('%b %d') if f.analysis_date else '' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state py-4">
+                        <p class="text-muted small mb-0">No food logs recorded for this client yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('{{ url_for("trainer.client_chart_data", client_id=client.client_id) }}')
+        .then(res => res.json())
+        .then(data => {
+            const ctx1 = document.getElementById('clientDailyChart');
+            if (ctx1) {
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [
+                            {
+                                label: 'Burned (kcal)',
+                                data: data.calories_burned,
+                                backgroundColor: 'rgba(37, 99, 235, 0.85)',
+                                borderColor: 'rgb(37, 99, 235)',
+                                borderWidth: 1,
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'Consumed (kcal)',
+                                data: data.calories_consumed,
+                                backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                                borderColor: 'rgb(16, 185, 129)',
+                                borderWidth: 1,
+                                borderRadius: 4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 12 } } }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' } },
+                            x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' } }
+                        }
+                    }
+                });
+            }
+
+            const ctx2 = document.getElementById('clientDurationChart');
+            if (ctx2) {
+                new Chart(ctx2, {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Duration (mins)',
+                            data: data.duration,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.08)',
+                            fill: true,
+                            tension: 0.25,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#2563eb'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' } },
+                            x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' } }
+                        }
+                    }
+                });
+            }
+        });
+});
+</script>
+{% endblock %}

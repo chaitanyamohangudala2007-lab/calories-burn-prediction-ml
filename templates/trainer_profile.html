@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Trainer Profile - FitAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4" style="max-width: 900px;">
+    <!-- Page Header -->
+    <div class="mb-4 pb-2 border-bottom">
+        <h1 class="fs-4 fw-bold mb-1">Trainer Profile & Settings</h1>
+        <p class="text-muted small mb-0">Manage coach credentials and account security.</p>
+    </div>
+
+    <!-- Quick Stats Strip -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="stat-card p-3 text-center d-block">
+                <span class="stat-label d-block">Active Clients</span>
+                <span class="stat-value">{{ stats.total_clients }}</span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stat-card p-3 text-center d-block">
+                <span class="stat-label d-block">Supervised Workouts</span>
+                <span class="stat-value">{{ stats.total_client_workouts }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Update Info -->
+        <div class="col-md-6">
+            <div class="card-custom p-4 h-100">
+                <h6 class="fw-bold mb-3 pb-2 border-bottom text-dark">Coach Details</h6>
+                <form method="POST" action="{{ url_for('trainer.profile') }}">
+                    <input type="hidden" name="action" value="update_info">
+
+                    <div class="mb-3">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-control bg-light" value="{{ trainer.email }}" readonly disabled>
+                        <div class="form-text">Trainer email registered in the coaching system.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="trainer_name" class="form-label">Trainer Name</label>
+                        <input type="text" class="form-control" id="trainer_name" name="trainer_name" value="{{ trainer.trainer_name }}" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Account Created</label>
+                        <input type="text" class="form-control bg-light" value="{{ trainer.created_at.strftime('%B %d, %Y') if trainer.created_at else 'Active' }}" readonly disabled>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom btn-trainer w-100">
+                        <i class="bi bi-check-lg"></i> Save Coach Details
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="col-md-6">
+            <div class="card-custom p-4 h-100">
+                <h6 class="fw-bold mb-3 pb-2 border-bottom text-dark">Change Password</h6>
+                <form method="POST" action="{{ url_for('trainer.profile') }}">
+                    <input type="hidden" name="action" value="change_password">
+
+                    <div class="mb-3">
+                        <label for="old_password" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="old_password" name="old_password" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password" required minlength="6">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="confirm_new" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirm_new" name="confirm_new" required minlength="6">
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-custom w-100">
+                        <i class="bi bi-key"></i> Update Password
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

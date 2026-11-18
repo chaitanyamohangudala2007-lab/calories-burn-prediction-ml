@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}FitAI - Your Fitness Journey, Powered by AI{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4" style="max-width: 1140px;">
+    <!-- Hero Section: Clean, Light, Human-Crafted SaaS Layout -->
+    <section class="py-5 text-center text-lg-start">
+        <div class="row align-items-center g-5 py-3">
+            <div class="col-lg-7">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill border bg-white small text-secondary">
+                    <span class="badge badge-blue">Machine Learning & Experiential Labs AI</span>
+                    <span>Physiological & Nutritional Intelligence</span>
+                </div>
+                <h1 class="display-6 fw-bold text-dark mb-3" style="letter-spacing: -0.03em; line-height: 1.2;">
+                    Your Fitness Journey, <br class="d-none d-sm-inline">
+                    <span class="text-primary">Powered by AI</span>
+                </h1>
+                <p class="text-muted mb-4 lead" style="font-size: 1.05rem; max-width: 540px;">
+                    Track your workouts, predict calories burned, analyze food nutrition, and monitor fitness progress with intelligent AI-powered technology.
+                </p>
+                <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start">
+                    <a href="{{ url_for('auth.user_register') }}" class="btn btn-primary-custom px-4 py-2">
+                        Get Started as User <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                    <a href="{{ url_for('auth.trainer_login') }}" class="btn btn-outline-custom px-3 py-2">
+                        Gym Trainer Portal
+                    </a>
+                </div>
+
+                <div class="row g-3 mt-4 pt-3 border-top text-start">
+                    <div class="col-sm-4 col-6">
+                        <div class="text-dark fw-bold fs-5">15,000+</div>
+                        <div class="text-muted small">Exercise Samples</div>
+                    </div>
+                    <div class="col-sm-4 col-6">
+                        <div class="text-dark fw-bold fs-5">&lt; 1.5 kcal</div>
+                        <div class="text-muted small">Model Mean Error</div>
+                    </div>
+                    <div class="col-sm-4 col-12">
+                        <div class="text-dark fw-bold fs-5">Vision AI</div>
+                        <div class="text-muted small">Instant Macro Scans</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Minimal Showcase Card -->
+            <div class="col-lg-5">
+                <div class="card-custom p-4 bg-white shadow-sm border mx-auto" style="max-width: 420px;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <div class="small fw-semibold text-dark">Calorie Burn Estimation</div>
+                        <span class="badge badge-green">Validated</span>
+                    </div>
+
+                    <div class="bg-light p-3 rounded-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-center text-muted small mb-1">
+                            <span>Running &bull; 30 mins</span>
+                            <span class="text-dark fw-semibold">Target HR: 125 bpm</span>
+                        </div>
+                        <div class="d-flex align-items-baseline gap-1 mt-2">
+                            <span class="fs-2 fw-bold text-dark">284.5</span>
+                            <span class="text-muted small">kcal predicted</span>
+                        </div>
+                    </div>
+
+                    <div class="row g-2 small text-secondary mb-3">
+                        <div class="col-6">
+                            <div class="p-2 border rounded bg-white">
+                                <span class="text-muted small d-block">Body Temperature</span>
+                                <span class="fw-semibold text-dark">38.6 °C</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 border rounded bg-white">
+                                <span class="text-muted small d-block">Intensity Rate</span>
+                                <span class="fw-semibold text-primary">9.4 kcal/min</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded bg-light border small text-muted">
+                        <span><i class="bi bi-shield-check text-success me-1"></i> XGBoost Regressor</span>
+                        <a href="{{ url_for('prediction.predict_calories') }}" class="text-primary fw-medium">Calculate &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Capabilities Grid -->
+    <section class="py-5 border-top">
+        <div class="text-center mb-4">
+            <h2 class="fs-4 fw-bold mb-2">Core Features</h2>
+            <p class="text-muted small" style="max-width: 580px; margin: 0 auto;">
+                A complete toolset bridging biometric data science, multimodal image analysis, and coaching management.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Feature 1 -->
+            <div class="col-md-4">
+                <div class="card-custom p-4 h-100 d-flex flex-column">
+                    <div class="stat-icon-wrapper stat-icon-blue mb-3">
+                        <i class="bi bi-fire"></i>
+                    </div>
+                    <h3 class="fs-6 fw-bold mb-2">Calorie Burn Prediction</h3>
+                    <p class="text-muted small mb-3 flex-grow-1">
+                        Utilizes your physiological metrics—duration, heart rate, body temperature, age, height, and weight—to calculate energy expenditure accurately.
+                    </p>
+                    <div class="pt-2 border-top">
+                        <a href="{{ url_for('prediction.predict_calories') }}" class="small fw-semibold text-primary">
+                            Predict Workout <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="col-md-4">
+                <div class="card-custom p-4 h-100 d-flex flex-column">
+                    <div class="stat-icon-wrapper stat-icon-green mb-3">
+                        <i class="bi bi-camera"></i>
+                    </div>
+                    <h3 class="fs-6 fw-bold mb-2">AI Food Nutrition Vision</h3>
+                    <p class="text-muted small mb-3 flex-grow-1">
+                        Upload or snap a meal picture. OpenAI vision models recognize the meal, estimate portion sizing, and calculate protein, carbs, fats, and fiber.
+                    </p>
+                    <div class="pt-2 border-top">
+                        <a href="{{ url_for('food.food_analyzer') }}" class="small fw-semibold text-success">
+                            Analyze Food <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="col-md-4">
+                <div class="card-custom p-4 h-100 d-flex flex-column">
+                    <div class="stat-icon-wrapper stat-icon-amber mb-3">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <h3 class="fs-6 fw-bold mb-2">Gym Trainer Portal</h3>
+                    <p class="text-muted small mb-3 flex-grow-1">
+                        Dedicated workspace for trainers to manage multiple clients, track individualized caloric progress, and review workout logs with complete data isolation.
+                    </p>
+                    <div class="pt-2 border-top">
+                        <a href="{{ url_for('auth.trainer_login') }}" class="small fw-semibold text-dark">
+                            Trainer Login <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portals Section -->
+    <section class="py-5 border-top mb-4">
+        <div class="text-center mb-4">
+            <h2 class="fs-4 fw-bold mb-1">Access Your Account</h2>
+            <p class="text-muted small">Select your portal to log in or register.</p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-5">
+                <div class="card-custom p-4 h-100 text-start bg-white">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="badge badge-blue">Normal User</span>
+                        <i class="bi bi-person text-muted"></i>
+                    </div>
+                    <h3 class="fs-5 fw-bold mb-1">Individual Member</h3>
+                    <p class="text-muted small mb-4">
+                        Track your workouts, estimate calories burned, analyze food pictures, and track your nutritional history.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('auth.user_login') }}" class="btn btn-primary-custom flex-grow-1">Log In</a>
+                        <a href="{{ url_for('auth.user_register') }}" class="btn btn-outline-custom">Register</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card-custom p-4 h-100 text-start bg-white">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="badge badge-green">Gym Coach</span>
+                        <i class="bi bi-shield-check text-muted"></i>
+                    </div>
+                    <h3 class="fs-5 fw-bold mb-1">Gym Trainer</h3>
+                    <p class="text-muted small mb-4">
+                        Add clients, log client workouts, review nutrition records, and evaluate client performance charts.
+                    </p>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('auth.trainer_login') }}" class="btn btn-primary-custom btn-trainer flex-grow-1">Trainer Log In</a>
+                        <a href="{{ url_for('auth.trainer_register') }}" class="btn btn-outline-custom">Register</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

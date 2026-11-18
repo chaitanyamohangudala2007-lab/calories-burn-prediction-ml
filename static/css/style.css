@@ -1,0 +1,579 @@
+/* ===================================================================
+   FitAI - Modern Human-Centered UI/UX Design System
+   Aesthetic: Light, Clean, Professional SaaS (Stripe/Linear/Notion inspired)
+   Color Palette: Soft Off-White, Clean Navy & Charcoal, Subtle Pastel Tints
+   =================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Brand / Primary Accent (Sophisticated Royal Blue) */
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-subtle: #f0f7ff;
+  --primary-border: #dbeafe;
+  --primary-text: #1e40af;
+
+  /* Neutral Dark / Charcoal for Typography */
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+
+  /* Backgrounds */
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --bg-hover: #f8fafc;
+
+  /* Borders */
+  --border-color: #e2e8f0;
+  --border-light: #f1f5f9;
+  --border-focus: #93c5fd;
+
+  /* Functional Soft Tints (Clean & Non-fluorescent) */
+  --tint-green-bg: #f0fdf4;
+  --tint-green-border: #bbf7d0;
+  --tint-green-text: #166534;
+
+  --tint-amber-bg: #fffbeb;
+  --tint-amber-border: #fde68a;
+  --tint-amber-text: #92400e;
+
+  --tint-rose-bg: #fef2f2;
+  --tint-rose-border: #fecaca;
+  --tint-rose-text: #991b1b;
+
+  --tint-blue-bg: #eff6ff;
+  --tint-blue-border: #bfdbfe;
+  --tint-blue-text: #1e40af;
+
+  /* Radius & Shadows (Natural & Soft) */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 9999px;
+
+  --shadow-xs: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.05), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.04), 0 4px 6px -4px rgba(15, 23, 42, 0.02);
+
+  /* Typography */
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Base Reset & Global Typography */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-page);
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+p {
+  margin-bottom: 0.75rem;
+  color: var(--text-secondary);
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: var(--primary-hover);
+}
+
+/* ===================================================================
+   Navigation Bar
+   =================================================================== */
+.navbar-custom {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.75rem 0;
+  box-shadow: var(--shadow-xs);
+}
+
+.navbar-brand {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--text-primary) !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: -0.03em;
+}
+
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  background-color: var(--primary-subtle);
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  font-size: 1.1rem;
+}
+
+.nav-link {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-secondary) !important;
+  padding: 0.45rem 0.75rem !important;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-primary) !important;
+  background-color: var(--bg-subtle);
+}
+
+.nav-link.active {
+  color: var(--primary-color) !important;
+  background-color: var(--primary-subtle);
+  font-weight: 600;
+}
+
+/* ===================================================================
+   Cards & Surfaces
+   =================================================================== */
+.card-custom {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-custom:hover {
+  border-color: #cbd5e1;
+}
+
+.card-header-clean {
+  background-color: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
+}
+
+.card-header-clean h6 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ===================================================================
+   Dashboard Metric / Statistic Cards
+   =================================================================== */
+.stat-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  box-shadow: var(--shadow-xs);
+  height: 100%;
+  position: relative;
+}
+
+.stat-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.stat-value {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.stat-subtext {
+  font-size: 0.78125rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+  background-color: var(--bg-subtle);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Subtle, tasteful icon tints */
+.stat-icon-blue {
+  background-color: #f0f7ff;
+  border-color: #dbeafe;
+  color: #2563eb;
+}
+
+.stat-icon-green {
+  background-color: #f0fdf4;
+  border-color: #dcfce7;
+  color: #16a34a;
+}
+
+.stat-icon-amber {
+  background-color: #fffbeb;
+  border-color: #fef3c7;
+  color: #d97706;
+}
+
+.stat-icon-rose {
+  background-color: #fef2f2;
+  border-color: #fee2e2;
+  color: #dc2626;
+}
+
+/* ===================================================================
+   Buttons & Interactive Elements
+   =================================================================== */
+.btn-primary-custom {
+  background-color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+}
+
+.btn-primary-custom:hover, .btn-primary-custom:focus {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: #ffffff;
+}
+
+.btn-outline-custom {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  box-shadow: var(--shadow-xs);
+  transition: all 0.15s ease;
+}
+
+.btn-outline-custom:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+.btn-outline-custom.active {
+  background-color: var(--primary-subtle);
+  border-color: var(--primary-border);
+  color: var(--primary-text);
+  font-weight: 600;
+}
+
+.btn-trainer {
+  background-color: #0f766e !important;
+  border-color: #0f766e !important;
+}
+
+.btn-trainer:hover {
+  background-color: #115e59 !important;
+  border-color: #115e59 !important;
+}
+
+/* ===================================================================
+   Form Controls
+   =================================================================== */
+.form-label {
+  font-size: 0.84375rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.form-control, .form-select {
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.8rem;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background-color: #ffffff;
+  box-shadow: var(--shadow-xs);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  outline: none;
+}
+
+.form-text {
+  font-size: 0.78125rem;
+  color: var(--text-muted);
+}
+
+.input-group-text {
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+}
+
+/* ===================================================================
+   Badges & Tags (Subtle, Clean & Pastel)
+   =================================================================== */
+.badge-custom, .badge {
+  font-weight: 500;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.badge-blue {
+  background-color: var(--tint-blue-bg);
+  border: 1px solid var(--tint-blue-border);
+  color: var(--tint-blue-text);
+}
+
+.badge-green {
+  background-color: var(--tint-green-bg);
+  border: 1px solid var(--tint-green-border);
+  color: var(--tint-green-text);
+}
+
+.badge-amber {
+  background-color: var(--tint-amber-bg);
+  border: 1px solid var(--tint-amber-border);
+  color: var(--tint-amber-text);
+}
+
+.badge-rose {
+  background-color: var(--tint-rose-bg);
+  border: 1px solid var(--tint-rose-border);
+  color: var(--tint-rose-text);
+}
+
+.badge-neutral {
+  background-color: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+/* ===================================================================
+   Tables
+   =================================================================== */
+.table-custom {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 0;
+}
+
+.table-custom th {
+  background-color: #f8fafc;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  border-top: none;
+}
+
+.table-custom td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  vertical-align: middle;
+  background-color: #ffffff;
+}
+
+.table-custom tbody tr:hover td {
+  background-color: #f8fafc;
+}
+
+.table-custom tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===================================================================
+   Clean Result Card (Prediction & Results)
+   =================================================================== */
+.result-card-clean {
+  background-color: #ffffff;
+  border: 1px solid var(--primary-border);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.result-card-clean::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--primary-color);
+}
+
+.result-calories-number {
+  font-family: var(--font-heading);
+  font-size: 2.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+/* ===================================================================
+   Nutrition Image & Camera
+   =================================================================== */
+.image-preview-container {
+  width: 100%;
+  height: 260px;
+  border: 1px dashed #cbd5e1;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #f8fafc;
+  position: relative;
+}
+
+.image-preview-container img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.camera-preview-video {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background-color: #000000;
+}
+
+/* Empty States */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  color: var(--text-muted);
+}
+
+.empty-state-icon {
+  font-size: 2.25rem;
+  color: #cbd5e1;
+  margin-bottom: 0.75rem;
+  display: inline-block;
+}
+
+/* Footer */
+.footer-custom {
+  background-color: #ffffff;
+  border-top: 1px solid var(--border-color);
+  padding: 1.5rem 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+/* Clean Alert Overrides */
+.alert {
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  border: 1px solid transparent;
+}
+
+.alert-success {
+  background-color: var(--tint-green-bg);
+  border-color: var(--tint-green-border);
+  color: var(--tint-green-text);
+}
+
+.alert-danger {
+  background-color: var(--tint-rose-bg);
+  border-color: var(--tint-rose-border);
+  color: var(--tint-rose-text);
+}
+
+.alert-warning {
+  background-color: var(--tint-amber-bg);
+  border-color: var(--tint-amber-border);
+  color: var(--tint-amber-text);
+}
+
+.alert-info {
+  background-color: var(--tint-blue-bg);
+  border-color: var(--tint-blue-border);
+  color: var(--tint-blue-text);
+}

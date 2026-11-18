@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}About - AI Calories Burn & Nutrition Analysis System{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4" style="max-width: 1000px;">
+    <!-- Title Card -->
+    <div class="card-custom p-4 p-md-5 mb-4 bg-white">
+        <span class="badge badge-blue px-3 py-1 mb-2">Project Architecture</span>
+        <h1 class="fs-3 fw-bold mb-3">About the FitAI Platform</h1>
+        <p class="text-muted mb-4 lead" style="font-size: 1.05rem;">
+            An end-to-end intelligent fitness ecosystem combining physiological Machine Learning regression, Multimodal Vision AI for food nutrition estimation, and relational MySQL database infrastructure.
+        </p>
+
+        <hr class="my-4">
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <h2 class="fs-6 fw-bold text-dark mb-2"><i class="bi bi-cpu text-primary me-2"></i>Machine Learning Model</h2>
+                <p class="text-secondary small">
+                    The calorie prediction engine is built on an <strong>XGBoost Regressor</strong> trained on 15,000 physiological exercise samples with an MAE under 1.5 kcal. It takes 7 primary biometric variables:
+                </p>
+                <div class="p-3 bg-light rounded small">
+                    <ul class="mb-0 text-muted ps-3">
+                        <li><strong>Biometrics:</strong> Age, Gender, Height (cm), Weight (kg)</li>
+                        <li><strong>Dynamics:</strong> Duration (min), Heart Rate (bpm), Body Temperature (°C)</li>
+                        <li><strong>Validation:</strong> Mean Absolute Error (MAE) of ~1.48 kcal.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h2 class="fs-6 fw-bold text-dark mb-2"><i class="bi bi-eye text-success me-2"></i>Multimodal Computer Vision</h2>
+                <p class="text-secondary small">
+                    The nutrition estimation engine utilizes the <strong>Experiential Labs Vision API</strong>. When a user captures or uploads a meal image:
+                </p>
+                <div class="p-3 bg-light rounded small">
+                    <ul class="mb-0 text-muted ps-3">
+                        <li>Identifies culinary items and visible components.</li>
+                        <li>Estimates volume, portion size, and caloric density.</li>
+                        <li>Extracts macronutrients: Protein, Carbohydrates, Fat, and Fiber.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack Matrix -->
+    <div class="card-custom p-4 mb-4 bg-white">
+        <h2 class="fs-5 fw-bold mb-3">Technology Stack Implementation</h2>
+        <div class="row g-3">
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 border rounded bg-light h-100">
+                    <div class="fw-semibold text-dark mb-1">Frontend</div>
+                    <div class="small text-muted">HTML5, CSS3, JavaScript, Bootstrap 5, Chart.js for interactive graphs.</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 border rounded bg-light h-100">
+                    <div class="fw-semibold text-dark mb-1">Backend</div>
+                    <div class="small text-muted">Python 3, Flask modular blueprints, Werkzeug security, JSON APIs.</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 border rounded bg-light h-100">
+                    <div class="fw-semibold text-dark mb-1">Database</div>
+                    <div class="small text-muted">MySQL 8.0, InnoDB transactional relationships, parameterized queries.</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="p-3 border rounded bg-light h-100">
+                    <div class="fw-semibold text-dark mb-1">AI & Data Science</div>
+                    <div class="small text-muted">XGBoost, Scikit-learn, Pandas, NumPy, Joblib, Experiential Labs Vision API.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

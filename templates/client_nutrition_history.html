@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}{{ client.client_name }} - Nutrition History - FitAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4" style="max-width: 1200px;">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <a href="{{ url_for('trainer.client_details', client_id=client.client_id) }}" class="btn btn-outline-custom btn-sm py-1 px-2">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h1 class="fs-4 fw-bold mb-0">{{ client.client_name }}'s Food Logs</h1>
+            </div>
+            <p class="text-muted small mb-0">AI food image scans and macronutrient breakdowns recorded for this client.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a href="{{ url_for('food.food_analyzer') }}" class="btn btn-primary-custom btn-sm">
+                <i class="bi bi-camera"></i> Scan Meal
+            </a>
+        </div>
+    </div>
+
+    <!-- Foods Table -->
+    <div class="card-custom mb-4">
+        <div class="card-header-clean">
+            <h6 class="fw-bold mb-0">Food Analysis Records ({{ foods|length }})</h6>
+        </div>
+        <div class="p-0">
+            {% if foods %}
+            <div class="table-responsive">
+                <table class="table-custom">
+                    <thead>
+                        <tr>
+                            <th>Meal Item</th>
+                            <th>Portion</th>
+                            <th>Estimated Calories</th>
+                            <th>Protein</th>
+                            <th>Carbs</th>
+                            <th>Fat</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for f in foods %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if f.image_path %}
+                                    <img src="{{ f.image_path }}" alt="Food" class="rounded me-2 border" style="width: 36px; height: 36px; object-fit: cover;">
+                                    {% endif %}
+                                    <span class="fw-semibold text-dark">{{ f.food_name }}</span>
+                                </div>
+                            </td>
+                            <td class="text-muted small">{{ f.quantity }}</td>
+                            <td class="fw-semibold text-success">{{ "{:,.1f}".format(f.estimated_calories) }} kcal</td>
+                            <td><span class="badge badge-neutral">{{ f.protein }}g</span></td>
+                            <td><span class="badge badge-neutral">{{ f.carbohydrates }}g</span></td>
+                            <td><span class="badge badge-neutral">{{ f.fat }}g</span></td>
+                            <td class="text-muted small">
+                                {{ f.analysis_date.strftime('%Y-%m-%d %H:%M') if f.analysis_date else 'N/A' }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-egg-fried empty-state-icon"></i>
+                <h2 class="fs-6 fw-bold mb-1">No food logs recorded yet</h2>
+                <p class="text-muted small mb-0">Scan a meal for {{ client.client_name }} to record nutrition.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}User Registration - FitAI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card-custom p-4 bg-white shadow-xs">
+                <div class="text-center mb-4">
+                    <div class="brand-icon mx-auto mb-2" style="width: 40px; height: 40px; font-size: 1.25rem;">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+                    <h1 class="fs-5 fw-bold mb-1">Create Account</h1>
+                    <p class="text-muted small mb-0">Start tracking your workouts & nutrition</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.user_register') }}">
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" value="{{ full_name or '' }}" placeholder="John Doe" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" placeholder="name@example.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="At least 6 characters" required minlength="6">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="confirm_password" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required minlength="6">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom w-100 py-2 mb-3">
+                        Register Account
+                    </button>
+                </form>
+
+                <div class="text-center border-top pt-3 mt-2">
+                    <p class="small text-muted mb-1">
+                        Already have an account? <a href="{{ url_for('auth.user_login') }}" class="fw-medium text-primary">Log in here</a>
+                    </p>
+                    <p class="small text-muted mb-0">
+                        Gym trainer? <a href="{{ url_for('auth.trainer_register') }}" class="fw-medium text-secondary">Trainer Register &rarr;</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

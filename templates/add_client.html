@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Client - FitAI{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 760px;">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="fs-4 fw-bold mb-1">Register New Client</h1>
+            <p class="text-muted small mb-0">Add an athlete to your roster to track their workouts and nutrition.</p>
+        </div>
+        <a href="{{ url_for('trainer.manage_clients') }}" class="btn btn-outline-custom btn-sm">
+            <i class="bi bi-arrow-left"></i> Client List
+        </a>
+    </div>
+
+    <div class="card-custom p-4">
+        <form method="POST" action="{{ url_for('trainer.add_client') }}">
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label for="client_name" class="form-label">Client Full Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="client_name" name="client_name" placeholder="e.g. Alex Morgan" value="{{ form.client_name if form else '' }}" required autofocus>
+                </div>
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="client@example.com" value="{{ form.email if form else '' }}" required>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                    <select class="form-select" id="gender" name="gender" required>
+                        <option value="male" {% if form and form.gender == 'male' %}selected{% endif %}>Male</option>
+                        <option value="female" {% if form and form.gender == 'female' %}selected{% endif %}>Female</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="age" class="form-label">Age</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="age" name="age" min="10" max="100" value="{{ form.age if form else 25 }}" required>
+                        <span class="input-group-text small">yrs</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="height" class="form-label">Height</label>
+                    <div class="input-group">
+                        <input type="number" step="0.1" class="form-control" id="height" name="height" min="100" max="230" value="{{ form.height if form else 170 }}" required>
+                        <span class="input-group-text small">cm</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label for="weight" class="form-label">Weight</label>
+                    <div class="input-group">
+                        <input type="number" step="0.1" class="form-control" id="weight" name="weight" min="30" max="250" value="{{ form.weight if form else 68 }}" required>
+                        <span class="input-group-text small">kg</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="bmiDisplay" class="form-text mb-4"></div>
+
+            <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                <a href="{{ url_for('trainer.manage_clients') }}" class="btn btn-outline-custom">Cancel</a>
+                <button type="submit" class="btn btn-primary-custom btn-trainer">
+                    <i class="bi bi-check-lg"></i> Save Client
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

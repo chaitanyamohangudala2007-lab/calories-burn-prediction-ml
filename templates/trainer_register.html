@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Gym Trainer Registration - FitAI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card-custom p-4 bg-white shadow-xs">
+                <div class="text-center mb-4">
+                    <div class="brand-icon mx-auto mb-2" style="width: 40px; height: 40px; font-size: 1.25rem; background-color: #f0fdf4; border-color: #bbf7d0; color: #16a34a;">
+                        <i class="bi bi-shield-plus"></i>
+                    </div>
+                    <span class="badge badge-green mb-1">Trainer Registration</span>
+                    <h1 class="fs-5 fw-bold mb-1">Create Trainer Account</h1>
+                    <p class="text-muted small mb-0">Manage client workouts and nutritional performance</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.trainer_register') }}">
+                    <div class="mb-3">
+                        <label for="trainer_name" class="form-label">Trainer / Coach Name</label>
+                        <input type="text" class="form-control" id="trainer_name" name="trainer_name" value="{{ trainer_name or '' }}" placeholder="Coach Alex Smith" required autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Trainer Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" placeholder="coach@fitnessclub.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="At least 6 characters" required minlength="6">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="confirm_password" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required minlength="6">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom btn-trainer w-100 py-2 mb-3">
+                        Register as Trainer
+                    </button>
+                </form>
+
+                <div class="text-center border-top pt-3 mt-2">
+                    <p class="small text-muted mb-1">
+                        Already registered as trainer? <a href="{{ url_for('auth.trainer_login') }}" class="fw-medium text-success">Log in here</a>
+                    </p>
+                    <p class="small text-muted mb-0">
+                        Individual user? <a href="{{ url_for('auth.user_register') }}" class="fw-medium text-primary">Register as User &rarr;</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Features - AI Calories Burn & Nutrition Analysis System{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4" style="max-width: 1040px;">
+    <div class="text-center py-4 mb-3">
+        <h1 class="fs-3 fw-bold mb-2">Platform Capabilities</h1>
+        <p class="text-muted small" style="max-width: 600px; margin: 0 auto;">
+            Designed to cover complete fitness tracking workflows from individual workouts and nutritional intake to multi-client coaching.
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Feature 1 -->
+        <div class="col-md-6">
+            <div class="card-custom p-4 h-100 bg-white">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon-wrapper stat-icon-blue me-3">
+                        <i class="bi bi-calculator"></i>
+                    </div>
+                    <div>
+                        <h2 class="fs-6 fw-bold mb-0">Physiological Calorie Burn Prediction</h2>
+                        <span class="small text-muted">XGBoost Regressor Model</span>
+                    </div>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Predicts total calories burned by taking into account cardiovascular response (heart rate) and thermal output (body temperature) alongside duration and physical biometrics.
+                </p>
+                <div class="p-3 bg-light rounded small">
+                    <div class="fw-semibold text-dark mb-1">Key Highlights:</div>
+                    <ul class="text-muted mb-0 ps-3">
+                        <li>High precision with an MAE under 1.5 kcal</li>
+                        <li>Adapts to low, moderate, and extreme cardiovascular intensities</li>
+                        <li>Stores historical data directly into MySQL for trend analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="col-md-6">
+            <div class="card-custom p-4 h-100 bg-white">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon-wrapper stat-icon-green me-3">
+                        <i class="bi bi-camera"></i>
+                    </div>
+                    <div>
+                        <h2 class="fs-6 fw-bold mb-0">Multimodal Food Nutrition Recognition</h2>
+                        <span class="small text-muted">Experiential Labs Multimodal Vision AI</span>
+                    </div>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Eliminates manual food diary logging. Point your camera or upload a picture of any meal to obtain estimated portion size, caloric density, and macronutrient profile.
+                </p>
+                <div class="p-3 bg-light rounded small">
+                    <div class="fw-semibold text-dark mb-1">Key Highlights:</div>
+                    <ul class="text-muted mb-0 ps-3">
+                        <li>Supports camera capture and image upload</li>
+                        <li>Provides protein, carbohydrate, fat, and fiber metrics</li>
+                        <li>Maintains long-term dietary logs with visual snapshots</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="col-md-6">
+            <div class="card-custom p-4 h-100 bg-white">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon-wrapper stat-icon-amber me-3">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <div>
+                        <h2 class="fs-6 fw-bold mb-0">Gym Trainer & Client Management</h2>
+                        <span class="small text-muted">Dedicated Coach Workspace</span>
+                    </div>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Gym coaches can register multiple clients, log specialized training sessions, and view granular progress charts with complete data isolation.
+                </p>
+                <div class="p-3 bg-light rounded small">
+                    <div class="fw-semibold text-dark mb-1">Key Highlights:</div>
+                    <ul class="text-muted mb-0 ps-3">
+                        <li>Strict role-based isolation between trainers</li>
+                        <li>Automated BMI computation and categorization</li>
+                        <li>Detailed client drill-downs with individual Chart.js graphs</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="col-md-6">
+            <div class="card-custom p-4 h-100 bg-white">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="stat-icon-wrapper stat-icon-rose me-3">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                    <div>
+                        <h2 class="fs-6 fw-bold mb-0">Energy Balance & Progress Tracking</h2>
+                        <span class="small text-muted">Interactive Visualizations</span>
+                    </div>
+                </div>
+                <p class="text-secondary small mb-3">
+                    Interactive dashboards automatically calculate caloric deficit or surplus by comparing calories burned during workouts against food calories consumed.
+                </p>
+                <div class="p-3 bg-light rounded small">
+                    <div class="fw-semibold text-dark mb-1">Key Highlights:</div>
+                    <ul class="text-muted mb-0 ps-3">
+                        <li>7-day rolling calories burned vs consumed charts</li>
+                        <li>Timeframe filters: Daily, Weekly, and Monthly</li>
+                        <li>Macronutrient distribution doughnut visualization</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

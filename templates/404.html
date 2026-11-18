@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found (404) - FitAI{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="card-custom p-4 p-md-5 mx-auto bg-white" style="max-width: 480px;">
+        <div class="brand-icon mx-auto mb-3" style="width: 48px; height: 48px; font-size: 1.5rem; background-color: #fffbeb; border-color: #fde68a; color: #d97706;">
+            <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <div class="fs-1 fw-bold text-dark mb-1">404</div>
+        <h1 class="fs-5 fw-bold mb-2">Page Not Found</h1>
+        <p class="text-muted small mb-4">
+            The page you are looking for doesn't exist or has been moved.
+        </p>
+        <a href="{{ url_for('home') }}" class="btn btn-primary-custom">
+            Return to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

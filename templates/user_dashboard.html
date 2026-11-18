@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block title %}User Dashboard - FitAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4" style="max-width: 1200px;">
+    <!-- Dashboard Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="fs-4 fw-bold mb-1">Dashboard</h1>
+            <p class="text-muted small mb-0">Welcome back, {{ user_name }}. Here is your energy expenditure and nutrition overview.</p>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+            <a href="{{ url_for('prediction.predict_calories') }}" class="btn btn-primary-custom btn-sm">
+                <i class="bi bi-fire"></i> Predict Workout
+            </a>
+            <a href="{{ url_for('food.food_analyzer') }}" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-camera"></i> Analyze Meal
+            </a>
+        </div>
+    </div>
+
+    <!-- 4 Clean Overview Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Card 1: Total Calories Burned -->
+        <div class="col-xl-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Total Calories Burned</div>
+                    <div class="stat-value">{{ "{:,.1f}".format(workout_stats.total_burned) }} <span class="fs-6 fw-normal text-muted">kcal</span></div>
+                    <div class="stat-subtext">
+                        <i class="bi bi-fire text-danger"></i> From {{ workout_stats.total_workouts }} recorded sessions
+                    </div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-blue">
+                    <i class="bi bi-fire"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 2: Total Workouts -->
+        <div class="col-xl-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Total Workouts</div>
+                    <div class="stat-value">{{ workout_stats.total_workouts }}</div>
+                    <div class="stat-subtext">
+                        <i class="bi bi-clock text-primary"></i> {{ "{:,.0f}".format(workout_stats.total_duration) }} total minutes
+                    </div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-green">
+                    <i class="bi bi-activity"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 3: Average Calories Burned -->
+        <div class="col-xl-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Avg Calories / Workout</div>
+                    <div class="stat-value">{{ "{:,.1f}".format(workout_stats.avg_burned) }} <span class="fs-6 fw-normal text-muted">kcal</span></div>
+                    <div class="stat-subtext">
+                        <i class="bi bi-graph-up text-success"></i> Energy per session
+                    </div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-amber">
+                    <i class="bi bi-lightning-charge"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card 4: Total Food Calories Consumed -->
+        <div class="col-xl-3 col-sm-6">
+            <div class="stat-card">
+                <div>
+                    <div class="stat-label">Food Calories Consumed</div>
+                    <div class="stat-value">{{ "{:,.1f}".format(food_stats.total_consumed) }} <span class="fs-6 fw-normal text-muted">kcal</span></div>
+                    <div class="stat-subtext">
+                        <i class="bi bi-egg-fried text-success"></i> {{ food_stats.total_meals }} meals logged
+                    </div>
+                </div>
+                <div class="stat-icon-wrapper stat-icon-rose">
+                    <i class="bi bi-egg-fried"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <!-- Energy Balance Chart: Burned vs Consumed -->
+        <div class="col-lg-8">
+            <div class="card-custom h-100">
+                <div class="card-header-clean">
+                    <div>
+                        <h6 class="fw-bold mb-0">7-Day Energy Expenditure vs Consumption</h6>
+                        <span class="text-muted small">Workouts (kcal) vs Dietary Intake (kcal)</span>
+                    </div>
+                    <span class="badge badge-neutral">Rolling 7 Days</span>
+                </div>
+                <div class="p-3">
+                    <div style="position: relative; height: 280px; width: 100%;">
+                        <canvas id="energyBalanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Macronutrient Breakdown Chart -->
+        <div class="col-lg-4">
+            <div class="card-custom h-100">
+                <div class="card-header-clean">
+                    <div>
+                        <h6 class="fw-bold mb-0">Macronutrient Profile</h6>
+                        <span class="text-muted small">Distribution from logged meals</span>
+                    </div>
+                </div>
+                <div class="p-3 d-flex flex-column align-items-center justify-content-center">
+                    {% if food_stats.total_protein + food_stats.total_carbs + food_stats.total_fat > 0 %}
+                    <div style="position: relative; height: 190px; width: 190px;" class="mb-3">
+                        <canvas id="macroDonutChart"></canvas>
+                    </div>
+                    <div class="row w-100 text-center g-2 small border-top pt-2">
+                        <div class="col-4">
+                            <span class="text-muted d-block small">Protein</span>
+                            <span class="fw-semibold text-primary">{{ "{:,.0f}".format(food_stats.total_protein) }}g</span>
+                        </div>
+                        <div class="col-4">
+                            <span class="text-muted d-block small">Carbs</span>
+                            <span class="fw-semibold text-warning">{{ "{:,.0f}".format(food_stats.total_carbs) }}g</span>
+                        </div>
+                        <div class="col-4">
+                            <span class="text-muted d-block small">Fat</span>
+                            <span class="fw-semibold text-danger">{{ "{:,.0f}".format(food_stats.total_fat) }}g</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="empty-state py-4">
+                        <i class="bi bi-pie-chart empty-state-icon"></i>
+                        <p class="small text-muted mb-2">No meals logged yet</p>
+                        <a href="{{ url_for('food.food_analyzer') }}" class="btn btn-outline-custom btn-sm">Scan a Meal</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Tables Row -->
+    <div class="row g-4 mb-4">
+        <!-- Recent Workouts -->
+        <div class="col-lg-6">
+            <div class="card-custom h-100">
+                <div class="card-header-clean">
+                    <h6 class="fw-bold mb-0">Recent Workouts</h6>
+                    <a href="{{ url_for('prediction.workout_history') }}" class="text-primary small fw-medium">View All &rarr;</a>
+                </div>
+                <div class="p-0">
+                    {% if recent_workouts %}
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Exercise</th>
+                                    <th>Duration</th>
+                                    <th>Heart Rate</th>
+                                    <th>Burned</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for w in recent_workouts %}
+                                <tr>
+                                    <td class="fw-semibold text-dark">{{ w.exercise_type }}</td>
+                                    <td>{{ w.duration|int }} min</td>
+                                    <td>{{ w.heart_rate|int }} bpm</td>
+                                    <td class="fw-semibold text-primary">{{ "{:,.1f}".format(w.calories_burned) }} kcal</td>
+                                    <td class="text-muted small">{{ w.workout_date.strftime('%b %d') if w.workout_date else 'N/A' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-activity empty-state-icon"></i>
+                        <p class="text-muted small mb-2">No workouts logged yet</p>
+                        <a href="{{ url_for('prediction.predict_calories') }}" class="btn btn-outline-custom btn-sm">Predict Workout</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Food Scans -->
+        <div class="col-lg-6">
+            <div class="card-custom h-100">
+                <div class="card-header-clean">
+                    <h6 class="fw-bold mb-0">Recent Food Scans</h6>
+                    <a href="{{ url_for('food.nutrition_history') }}" class="text-primary small fw-medium">View All &rarr;</a>
+                </div>
+                <div class="p-0">
+                    {% if recent_foods %}
+                    <div class="table-responsive">
+                        <table class="table-custom">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Portion</th>
+                                    <th>Calories</th>
+                                    <th>Macros</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for f in recent_foods %}
+                                <tr>
+                                    <td class="fw-semibold text-dark">
+                                        <div class="d-flex align-items-center">
+                                            {% if f.image_path %}
+                                            <img src="{{ f.image_path }}" alt="Food" class="rounded me-2" style="width: 28px; height: 28px; object-fit: cover;">
+                                            {% endif %}
+                                            <span>{{ f.food_name }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted small">{{ f.quantity }}</td>
+                                    <td class="fw-semibold text-success">{{ "{:,.0f}".format(f.estimated_calories) }} kcal</td>
+                                    <td class="text-muted small">{{ f.protein|int }}P / {{ f.carbohydrates|int }}C / {{ f.fat|int }}F</td>
+                                    <td class="text-muted small">{{ f.analysis_date.strftime('%b %d') if f.analysis_date else 'N/A' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-egg-fried empty-state-icon"></i>
+                        <p class="text-muted small mb-2">No meals analyzed yet</p>
+                        <a href="{{ url_for('food.food_analyzer') }}" class="btn btn-outline-custom btn-sm">Analyze Meal</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('{{ url_for("user.chart_data") }}')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('energyBalanceChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [
+                            {
+                                label: 'Burned (kcal)',
+                                data: data.calories_burned,
+                                backgroundColor: 'rgba(37, 99, 235, 0.85)',
+                                borderColor: 'rgb(37, 99, 235)',
+                                borderWidth: 1,
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'Consumed (kcal)',
+                                data: data.calories_consumed,
+                                backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                                borderColor: 'rgb(16, 185, 129)',
+                                borderWidth: 1,
+                                borderRadius: 4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                                labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 12 } }
+                            },
+                            tooltip: {
+                                padding: 8,
+                                cornerRadius: 6,
+                                titleFont: { family: 'Plus Jakarta Sans', size: 12 },
+                                bodyFont: { family: 'Inter', size: 12 }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: '#f1f5f9' },
+                                ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+    const macroCtx = document.getElementById('macroDonutChart');
+    if (macroCtx) {
+        new Chart(macroCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Protein', 'Carbohydrates', 'Fat'],
+                datasets: [{
+                    data: [{{ food_stats.total_protein|round(1) }}, {{ food_stats.total_carbs|round(1) }}, {{ food_stats.total_fat|round(1) }}],
+                    backgroundColor: ['#2563eb', '#f59e0b', '#ef4444'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '72%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}AI Food Nutrition Analyzer - FitAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4" style="max-width: 1100px;">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="fs-4 fw-bold mb-1">AI Food Nutrition Analyzer</h1>
+            <p class="text-muted small mb-0">Multimodal computer vision nutrition estimation powered by Experiential Labs Vision AI.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            {% if user_role == 'user' %}
+            <a href="{{ url_for('food.nutrition_history') }}" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-journal-text"></i> Nutrition History
+            </a>
+            {% elif user_role == 'trainer' %}
+            <a href="{{ url_for('trainer.manage_clients') }}" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-people"></i> Back to Clients
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Input & Preview Column -->
+        <div class="col-lg-6">
+            <div class="card-custom p-4 h-100">
+                <h6 class="fw-bold mb-3 pb-2 border-bottom text-dark">Meal Photo Input</h6>
+
+                <form method="POST" action="{{ url_for('food.food_analyzer') }}" enctype="multipart/form-data" id="foodForm">
+                    {% if user_role == 'trainer' %}
+                    <div class="mb-3 p-3 bg-light rounded border">
+                        <label for="client_id" class="form-label fw-semibold text-dark">Log for Client (Optional)</label>
+                        <select class="form-select" id="client_id" name="client_id">
+                            <option value="">-- General / Personal Log --</option>
+                            {% for c in clients %}
+                            <option value="{{ c.client_id }}">{{ c.client_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+
+                    <!-- Mode Toggle Buttons -->
+                    <div class="d-flex gap-2 mb-3">
+                        <button type="button" class="btn btn-outline-custom btn-sm active" id="btnUploadMode" onclick="stopCamera()">
+                            <i class="bi bi-upload"></i> Upload File
+                        </button>
+                        <button type="button" class="btn btn-outline-custom btn-sm" id="startCamBtn" onclick="startCamera()">
+                            <i class="bi bi-camera"></i> Use Live Camera
+                        </button>
+                        <button type="button" class="btn btn-outline-danger btn-sm d-none" id="stopCamBtn" onclick="stopCamera()">
+                            <i class="bi bi-camera-video-off"></i> Stop Camera
+                        </button>
+                    </div>
+
+                    <!-- Live Camera Feed (Hidden by default) -->
+                    <div id="cameraSection" class="d-none mb-3 text-center">
+                        <video id="cameraVideo" class="camera-preview-video border mb-2" autoplay playsinline></video>
+                        <canvas id="captureCanvas" class="d-none"></canvas>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button type="button" class="btn btn-primary-custom btn-sm" id="snapBtn" onclick="captureSnapshot()">
+                                <i class="bi bi-camera"></i> Capture Snapshot
+                            </button>
+                            <button type="button" class="btn btn-outline-custom btn-sm d-none" id="retakeBtn" onclick="retakeSnapshot()">
+                                <i class="bi bi-arrow-counterclockwise"></i> Retake
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- File Upload Input -->
+                    <div id="uploadSection" class="mb-3">
+                        <label for="food_image" class="form-label">Select Meal Image</label>
+                        <input class="form-control" type="file" id="food_image" name="food_image" accept="image/png, image/jpeg, image/jpg, image/webp">
+                        <div class="form-text">Supported: JPG, PNG, WEBP (Max 16MB)</div>
+                    </div>
+
+                    <!-- Hidden input for Camera Base64 snapshot -->
+                    <input type="hidden" name="camera_data" id="camera_data" value="">
+
+                    <!-- Image Preview Area -->
+                    <div class="image-preview-container mb-3" id="previewContainer">
+                        <div id="uploadPlaceholder" class="text-center text-muted p-4 {% if saved_image_url %}d-none{% endif %}">
+                            <i class="bi bi-image fs-2 d-block mb-2 text-muted"></i>
+                            <span class="small">Image preview will appear here</span>
+                        </div>
+                        <img id="imagePreview" src="{{ saved_image_url or '' }}" alt="Meal Preview" class="{% if not saved_image_url %}d-none{% endif %}">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom w-100 py-2" id="analyzeBtn">
+                        <i class="bi bi-magic"></i> Analyze Food & Estimate Nutrition
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Analysis Results Column -->
+        <div class="col-lg-6">
+            {% if analysis_result %}
+            <div class="card-custom p-4 h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3 pb-2 border-bottom">
+                    <div>
+                        <span class="badge badge-green text-uppercase mb-1">{{ analysis_result.health_rating }}</span>
+                        <h2 class="fs-5 fw-bold mb-0 text-dark">{{ analysis_result.food_name }}</h2>
+                    </div>
+                    <span class="badge badge-neutral">Portion: {{ analysis_result.quantity }}</span>
+                </div>
+
+                <!-- Calorie Banner -->
+                <div class="p-3 bg-light rounded border text-center mb-3">
+                    <span class="text-muted small text-uppercase fw-semibold d-block">Estimated Caloric Content</span>
+                    <span class="fs-2 fw-bold text-dark">{{ "{:,.0f}".format(analysis_result.estimated_calories) }} <span class="fs-6 fw-normal text-muted">kcal</span></span>
+                    <div class="small text-muted mt-1">{{ analysis_result.description }}</div>
+                </div>
+
+                <!-- 4 Macro Pills -->
+                <div class="row g-2 mb-3 text-center">
+                    <div class="col-3">
+                        <div class="p-2 border rounded bg-white">
+                            <span class="text-muted small d-block">Protein</span>
+                            <span class="fw-semibold text-primary">{{ analysis_result.protein }}g</span>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="p-2 border rounded bg-white">
+                            <span class="text-muted small d-block">Carbs</span>
+                            <span class="fw-semibold text-warning">{{ analysis_result.carbohydrates }}g</span>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="p-2 border rounded bg-white">
+                            <span class="text-muted small d-block">Fat</span>
+                            <span class="fw-semibold text-danger">{{ analysis_result.fat }}g</span>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="p-2 border rounded bg-white">
+                            <span class="text-muted small d-block">Fiber</span>
+                            <span class="fw-semibold text-success">{{ analysis_result.fiber }}g</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart: Macronutrient breakdown -->
+                <div class="mb-3">
+                    <div class="small fw-semibold text-muted text-uppercase mb-1">Macronutrient Ratio</div>
+                    <div style="position: relative; height: 160px;">
+                        <canvas id="mealMacroChart"></canvas>
+                    </div>
+                </div>
+
+                {% if analysis_result.ingredients %}
+                <div class="mb-3">
+                    <div class="small fw-semibold text-muted mb-1">Identified Components:</div>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for ing in analysis_result.ingredients %}
+                        <span class="badge badge-neutral small">{{ ing }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Disclaimer -->
+                <div class="alert alert-light border small text-muted mb-0 mt-auto py-2 px-3">
+                    <i class="bi bi-info-circle me-1"></i>
+                    <strong>Disclaimer:</strong> Values are automated estimates based on visual appearance and portion approximations.
+                </div>
+            </div>
+            {% else %}
+            <!-- Guidance / Empty State Card -->
+            <div class="card-custom p-4 h-100 bg-white d-flex flex-column justify-content-center text-center">
+                <div class="py-4">
+                    <div class="stat-icon-wrapper stat-icon-green mx-auto mb-3">
+                        <i class="bi bi-camera"></i>
+                    </div>
+                    <h2 class="fs-6 fw-bold text-dark mb-1">No Meal Analyzed Yet</h2>
+                    <p class="text-muted small mb-4" style="max-width: 360px; margin: 0 auto;">
+                        Upload a photo of your dish or take a photo with your webcam to generate nutritional estimates.
+                    </p>
+                    <div class="p-3 bg-light rounded border text-start small mx-auto" style="max-width: 400px;">
+                        <div class="fw-semibold text-dark mb-1">Tips for Best Accuracy:</div>
+                        <ul class="text-muted ps-3 mb-0">
+                            <li>Ensure balanced lighting with the whole plate in frame.</li>
+                            <li>Avoid blurry or heavily obscured pictures.</li>
+                            <li>The AI calculates volume and density estimates for standard dish sizes.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+{% if analysis_result %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('mealMacroChart');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Protein', 'Carbs', 'Fat', 'Fiber'],
+                datasets: [{
+                    data: [
+                        {{ analysis_result.protein }},
+                        {{ analysis_result.carbohydrates }},
+                        {{ analysis_result.fat }},
+                        {{ analysis_result.fiber }}
+                    ],
+                    backgroundColor: ['#2563eb', '#f59e0b', '#ef4444', '#10b981'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: { boxWidth: 10, font: { family: 'Plus Jakarta Sans', size: 11 } }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

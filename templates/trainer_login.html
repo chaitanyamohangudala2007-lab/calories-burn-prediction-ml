@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Gym Trainer Login - FitAI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="card-custom p-4 bg-white shadow-xs">
+                <div class="text-center mb-4">
+                    <div class="brand-icon mx-auto mb-2" style="width: 40px; height: 40px; font-size: 1.25rem; background-color: #f0fdf4; border-color: #bbf7d0; color: #16a34a;">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <span class="badge badge-green mb-1">Trainer Portal</span>
+                    <h1 class="fs-5 fw-bold mb-1">Coach Sign In</h1>
+                    <p class="text-muted small mb-0">Access client roster & training logs</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('auth.trainer_login') }}">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Trainer Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" placeholder="coach@fitnessclub.com" required autofocus>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter trainer password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom btn-trainer w-100 py-2 mb-3">
+                        Sign In as Coach
+                    </button>
+                </form>
+
+                <div class="text-center border-top pt-3 mt-2">
+                    <p class="small text-muted mb-1">
+                        New coach? <a href="{{ url_for('auth.trainer_register') }}" class="fw-medium text-success">Register as Trainer</a>
+                    </p>
+                    <p class="small text-muted mb-0">
+                        Individual user? <a href="{{ url_for('auth.user_login') }}" class="fw-medium text-primary">Normal User Login &rarr;</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Calories Burn Prediction - FitAI{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4" style="max-width: 1100px;">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
+        <div>
+            <h1 class="fs-4 fw-bold mb-1">Calories Burn Prediction</h1>
+            <p class="text-muted small mb-0">Estimate energy expenditure using trained XGBoost physiological regression (MAE ~1.48 kcal).</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            {% if user_role == 'user' %}
+            <a href="{{ url_for('prediction.workout_history') }}" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-clock-history"></i> Workout History
+            </a>
+            {% elif user_role == 'trainer' %}
+            <a href="{{ url_for('trainer.manage_clients') }}" class="btn btn-outline-custom btn-sm">
+                <i class="bi bi-people"></i> Back to Clients
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Input Form Section -->
+        <div class="col-lg-7">
+            <div class="card-custom p-4">
+                <h6 class="fw-bold mb-3 pb-2 border-bottom text-dark">Physiological & Biometric Inputs</h6>
+                
+                <form method="POST" action="{{ url_for('prediction.predict_calories') }}">
+                    {% if user_role == 'trainer' %}
+                    <div class="mb-3 p-3 bg-light rounded border">
+                        <label for="client_id" class="form-label fw-semibold text-dark">Assign to Client <span class="text-danger">*</span></label>
+                        <select class="form-select" id="client_id" name="client_id" required>
+                            <option value="">-- Select Client --</option>
+                            {% for c in clients %}
+                            <option value="{{ c.client_id }}" {% if form_data.client_id|string == c.client_id|string %}selected{% endif %}>
+                                {{ c.client_name }} ({{ c.gender|capitalize }}, {{ c.age }} yrs, {{ c.height }}cm, {{ c.weight }}kg)
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">The predicted workout will be stored directly into this client's workout history.</div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Biometrics -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="exercise_type" class="form-label">Exercise Type</label>
+                            <select class="form-select" id="exercise_type" name="exercise_type" required>
+                                <option value="Running" {% if form_data.exercise_type == 'Running' %}selected{% endif %}>Running / Jogging</option>
+                                <option value="Cycling" {% if form_data.exercise_type == 'Cycling' %}selected{% endif %}>Cycling</option>
+                                <option value="Swimming" {% if form_data.exercise_type == 'Swimming' %}selected{% endif %}>Swimming</option>
+                                <option value="HIIT Cardio" {% if form_data.exercise_type == 'HIIT Cardio' %}selected{% endif %}>HIIT Cardio</option>
+                                <option value="Weightlifting" {% if form_data.exercise_type == 'Weightlifting' %}selected{% endif %}>Weight Training</option>
+                                <option value="Walking" {% if form_data.exercise_type == 'Walking' %}selected{% endif %}>Walking / Treadmill</option>
+                                <option value="Jump Rope" {% if form_data.exercise_type == 'Jump Rope' %}selected{% endif %}>Jump Rope</option>
+                                <option value="General Workout" {% if form_data.exercise_type == 'General Workout' or not form_data.exercise_type %}selected{% endif %}>General Workout</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                            <select class="form-select" id="gender" name="gender" required>
+                                <option value="male" {% if form_data.gender == 'male' or not form_data.gender %}selected{% endif %}>Male</option>
+                                <option value="female" {% if form_data.gender == 'female' %}selected{% endif %}>Female</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-2">
+                        <div class="col-md-4">
+                            <label for="age" class="form-label">Age</label>
+                            <div class="input-group">
+                                <input type="number" class="form-control" id="age" name="age" min="10" max="100" value="{{ form_data.age or 25 }}" required>
+                                <span class="input-group-text small">yrs</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="height" class="form-label">Height</label>
+                            <div class="input-group">
+                                <input type="number" step="0.1" class="form-control" id="height" name="height" min="100" max="230" value="{{ form_data.height or 175 }}" required>
+                                <span class="input-group-text small">cm</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="weight" class="form-label">Weight</label>
+                            <div class="input-group">
+                                <input type="number" step="0.1" class="form-control" id="weight" name="weight" min="30" max="200" value="{{ form_data.weight or 70 }}" required>
+                                <span class="input-group-text small">kg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="bmiDisplay" class="form-text mb-3"></div>
+
+                    <!-- Dynamics -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label for="duration" class="form-label">Duration</label>
+                            <div class="input-group">
+                                <input type="number" step="0.5" class="form-control" id="duration" name="duration" min="1" max="240" value="{{ form_data.duration or 30 }}" required>
+                                <span class="input-group-text small">min</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="heart_rate" class="form-label">Heart Rate</label>
+                            <div class="input-group">
+                                <input type="number" step="0.5" class="form-control" id="heart_rate" name="heart_rate" min="50" max="210" value="{{ form_data.heart_rate or 115 }}" required>
+                                <span class="input-group-text small">bpm</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="body_temp" class="form-label">Body Temp</label>
+                            <div class="input-group">
+                                <input type="number" step="0.1" class="form-control" id="body_temp" name="body_temp" min="36.0" max="42.0" value="{{ form_data.body_temp or 39.5 }}" required>
+                                <span class="input-group-text small">°C</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom w-100 py-2">
+                        <i class="bi bi-cpu"></i> Predict & Save Workout
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Result / Guidance Column -->
+        <div class="col-lg-5">
+            {% if prediction_result %}
+            <div class="result-card-clean">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-semibold text-muted text-uppercase">Predicted Energy</span>
+                    <span class="badge badge-blue">{{ prediction_result.intensity }}</span>
+                </div>
+
+                <div class="result-calories-number mb-1">
+                    {{ prediction_result.calories }} <span class="fs-5 text-muted fw-normal">kcal</span>
+                </div>
+
+                <div class="text-muted small mb-3">
+                    Rate: <strong>{{ prediction_result.cal_per_min }}</strong> kcal/minute
+                </div>
+
+                <div class="row g-2 pt-3 border-top mb-3">
+                    <div class="col-6">
+                        <div class="p-2 border rounded bg-light">
+                            <span class="text-muted small d-block">Exercise</span>
+                            <span class="fw-semibold text-dark">{{ prediction_result.exercise_type }}</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-2 border rounded bg-light">
+                            <span class="text-muted small d-block">Duration</span>
+                            <span class="fw-semibold text-dark">{{ prediction_result.duration|int }} minutes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="small text-muted">
+                    <i class="bi bi-check-circle text-success me-1"></i> Recorded into MySQL workout history.
+                </div>
+            </div>
+            {% else %}
+            <!-- Guidance Card -->
+            <div class="card-custom p-4 h-100 bg-white">
+                <h6 class="fw-bold text-dark mb-2">Model Information</h6>
+                <p class="text-muted small mb-3">
+                    The physiological engine calculates expenditure based on cardiovascular intensity and thermal work generated during exercise.
+                </p>
+
+                <div class="p-3 bg-light rounded border mb-3 small">
+                    <div class="fw-semibold text-dark mb-2">Input Variables:</div>
+                    <ul class="text-muted ps-3 mb-0">
+                        <li><strong>Heart Rate & Duration:</strong> Reflect cardiovascular output and effort level.</li>
+                        <li><strong>Body Temperature:</strong> Measures heat produced by active muscles.</li>
+                        <li><strong>Biometrics:</strong> Accounts for body mass and baseline metabolic requirements.</li>
+                    </ul>
+                </div>
+
+                <div class="small text-muted">
+                    <i class="bi bi-shield-check text-success me-1"></i> Strict compatibility with the trained model feature order.
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
